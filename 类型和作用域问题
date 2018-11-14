@@ -35,3 +35,6 @@
               var result=buildUrl();  
               alert(result);  
               alert(href);  
+              
+              
+    https://blog.csdn.net/cuew1987/article/details/11265153
