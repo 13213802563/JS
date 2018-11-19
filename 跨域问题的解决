@@ -17,90 +17,110 @@
           $data = json_encode($names);
           echo $data;
       ?>
- 　第二：使用jsonp
-  JSONP由两部分组成：回调函数和数据。回调函数是当响应到来时应该在页面中调用的函数，而数据就是传入回调函数中的JSON数据。
-  jsonp的原理是：
+ 第二：使用jsonp
+        JSONP由两部分组成：回调函数和数据。回调函数是当响应到来时应该在页面中调用的函数，而数据就是传入回调函数中的JSON数据。
+        jsonp的原理是：
 
-  就是利用<script>标签没有跨域限制，来达到与第三方通讯的目的。
+        就是利用<script>标签没有跨域限制，来达到与第三方通讯的目的。
 
-  当需要通讯时，脚本创建一个<script>元素，地址指向第三方的API网址，并提供一个回调函数来接收数据（函数名可约定，或通过地址参数传递）。 
-  第三方产生的响应为json数据的包装（故称之为jsonp，即json padding），形如： 
-  callback({"name":"hax","gender":"Male"}) 
-  这样浏览器会调用callback函数，并传递解析后json对象作为参数。
+        当需要通讯时，脚本创建一个<script>元素，地址指向第三方的API网址，并提供一个回调函数来接收数据（函数名可约定，或通过地址参数传递）。 
+        第三方产生的响应为json数据的包装（故称之为jsonp，即json padding），形如： 
+        callback({"name":"hax","gender":"Male"}) 
+        这样浏览器会调用callback函数，并传递解析后json对象作为参数。
 
-  （我们知道 <link href   <img src   <script src   请求的数据都不受域的限制）
+        （我们知道 <link href   <img src   <script src   请求的数据都不受域的限制）
 
-  jsonp的使用方法：
+        jsonp的使用方法：
 
-  客户端指明使用jsonp的方式，服务器接受参数，并外包裹要返回的数据，再一并返回。
+        客户端指明使用jsonp的方式，服务器接受参数，并外包裹要返回的数据，再一并返回。
 
-  jquery的ajax简单描述：
+        jquery的ajax简单描述：
 
-  前端指明data:jsonp , 在标明自定义的参数名 jsonp:jsoncallback
-  
-  <body>
-    <div id="box">
-        <ul>names:</ul>
-    </div>
-    <script type="text/javascript" src="./js/jquery.min.js"></script>
-    <script type="text/javascript">
-        function addContents(data){ 
-            var box = document.getElementById('box'),
-                ul = box.getElementsByTagName('ul')[0],
-                fragment = document.createDocumentFragment(),
-                li;
-            for(var i=0,j=data.length; i<j; i++){ 
-                li = document.createElement('li');
-                if(data[i].hasOwnProperty('name')){ 
-                    li.appendChild(document.createTextNode(data[i].name));
-                    fragment.appendChild(li);
-                }
-            }
-            ul.appendChild(fragment);
-        }
+        前端指明data:jsonp , 在标明自定义的参数名 jsonp:jsoncallback
 
-        $.ajax({ 
-            //url: './cross_domain.php',
-            url: 'http://demoff.sinaapp.com/cross_domain.php',
-            type: 'GET',
-            dataType: 'jsonp',
-            jsonp: 'jsoncallback',
-            data: {},
-            success: function(data){ 
-                addContents(data);
-            },
-            error: function(xmlHttpRequest,textStatus,error){ 
-                console.log(xmlHttpRequest.status);
-                console.log(textStatus);
-            }
-        });
-    </script>
-</body>
+        <body>
+          <div id="box">
+              <ul>names:</ul>
+          </div>
+          <script type="text/javascript" src="./js/jquery.min.js"></script>
+          <script type="text/javascript">
+              function addContents(data){ 
+                  var box = document.getElementById('box'),
+                      ul = box.getElementsByTagName('ul')[0],
+                      fragment = document.createDocumentFragment(),
+                      li;
+                  for(var i=0,j=data.length; i<j; i++){ 
+                      li = document.createElement('li');
+                      if(data[i].hasOwnProperty('name')){ 
+                          li.appendChild(document.createTextNode(data[i].name));
+                          fragment.appendChild(li);
+                      }
+                  }
+                  ul.appendChild(fragment);
+              }
 
-后端服务器部分要做的就是，拿到参数，再包裹
-它只支持GET请求而不支持POST等其它类型的HTTP请求；
-它只支持跨域HTTP请求这种情况，不能解决不同域的两个页面之间如何进行JavaScript调用的问题。
+              $.ajax({ 
+                  //url: './cross_domain.php',
+                  url: 'http://demoff.sinaapp.com/cross_domain.php',
+                  type: 'GET',
+                  dataType: 'jsonp',
+                  jsonp: 'jsoncallback',
+                  data: {},
+                  success: function(data){ 
+                      addContents(data);
+                  },
+                  error: function(xmlHttpRequest,textStatus,error){ 
+                      console.log(xmlHttpRequest.status);
+                      console.log(textStatus);
+                  }
+              });
+          </script>
+      </body>
+
+      后端服务器部分要做的就是，拿到参数，再包裹
+      它只支持GET请求而不支持POST等其它类型的HTTP请求；
+      它只支持跨域HTTP请求这种情况，不能解决不同域的两个页面之间如何进行JavaScript调用的问题。
 第三： document.domain + iframe （iframe的使用主要是为了ajax通信）
-  不同的框架之间是可以获取window对象的，但却无法获取相应的属性和方法。
-  比如，有一个页面，它的地址是http://www.example.com/a.html ，
-  在这个页面里面有一个iframe，它的src是http://example.com/b.html,
-我们只要把http://www.example.com/a.html 和http://example.com/b.html这两个页面的document.domain都设成相同的域名就可以了。
-但要注意的是，document.domain的设置是有限制的，我们只能把document.domain设置成自身或更高一级的父域，且主域必须相同
-1.在页面 http://www.example.com/a.html 中设置document.domain:
-<iframe id = "iframe" src="http://example.com/b.html" onload = "test()"></iframe>
-<script type="text/javascript">
-    document.domain = 'example.com';//设置成主域
-    function test(){
-        alert(document.getElementById('￼iframe').contentWindow);//contentWindow 可取得子窗口的 window 对象
-    }
-</script>
-2.在页面 http://example.com/b.html 中也设置document.domain:
-<script type="text/javascript">
-    document.domain = 'example.com';//在iframe载入这个页面也设置document.domain，使之与主页面的document.domain相同
-</script>
+        不同的框架之间是可以获取window对象的，但却无法获取相应的属性和方法。
+        比如，有一个页面，它的地址是http://www.example.com/a.html ，
+        在这个页面里面有一个iframe，它的src是http://example.com/b.html,
+      我们只要把http://www.example.com/a.html 和http://example.com/b.html这两个页面的document.domain都设成相同的域名就可以了。
+      但要注意的是，document.domain的设置是有限制的，我们只能把document.domain设置成自身或更高一级的父域，且主域必须相同
+      1.在页面 http://www.example.com/a.html 中设置document.domain:
+      <iframe id = "iframe" src="http://example.com/b.html" onload = "test()"></iframe>
+      <script type="text/javascript">
+          document.domain = 'example.com';//设置成主域
+          function test(){
+              alert(document.getElementById('￼iframe').contentWindow);//contentWindow 可取得子窗口的 window 对象
+          }
+      </script>
+      2.在页面 http://example.com/b.html 中也设置document.domain:
+      <script type="text/javascript">
+          document.domain = 'example.com';//在iframe载入这个页面也设置document.domain，使之与主页面的document.domain相同
+      </script>
 　第四： 使用window.name + iframe
 　第五：使用 window.postMessage方法
- 
+     postMessage(data,origin)方法接受两个参数
+       data:要传递的数据，在传递参数的时候需要使用JSON.stringify()方法对对象参数序列化。
+       origin：字符串参数，指明目标窗口的源，协议+主机+端口号[+URL]
+       
+       <iframe src="http://tuhao.com" name="sendMessage"></iframe>
+      //当前脚本
+         let ifr = window.frames['sendMessage'];
+      //使用iframe的window向iframe发送message。
+         ifr.postmessage('give u a message', "http://tuhao.com");
+      //tuhao.com的脚本
+         window.addEventListener('message', receiver, false);
+        function receiver(e) {
+          if (e.origin == 'http://tuhao.com') {
+              if (e.data == 'give u a message') {
+                  e.source.postMessage('received', e.origin);  //向原网页返回信息
+              } else {
+                  alert(e.data);
+              }
+          }
+      }
  
  参考网址：http://www.cnblogs.com/imwtr/p/4764123.html
          https://www.cnblogs.com/JChen666/p/3399951.html
+         https://www.cnblogs.com/dolphinX/p/3464056.html
