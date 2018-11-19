@@ -120,6 +120,12 @@
               }
           }
       }
+第六：动态创建script
+第七：location.hash + iframe
+第八：web sockets
+    JS创建了web socket之后，会有一个HTTP请求发送到浏览器以发起连接。取得服务器响应后，建立的连接会使用HTTP升级从HTTP协议交换为web sockt协议。
+只有在支持web socket协议的服务器上才能正常工作。
+   
  
  参考网址：http://www.cnblogs.com/imwtr/p/4764123.html
          https://www.cnblogs.com/JChen666/p/3399951.html
