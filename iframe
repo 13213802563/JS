@@ -10,8 +10,45 @@
     8.sandbox: 对iframe进行一些列限制，IE10+支持
 我们通常使用iframe最基本的特性，就是能自由操作iframe和父框架的内容(DOM). 但前提条件是同域. 如果跨域顶多只能实现页面跳转window.location.href.
 一.获取iframe里的内容
+1.DOM节点提供的方式
   iframe.contentWindow, 获取iframe的window对象
   iframe.contentDocument, 获取iframe的document对象
+  document.getElementById("iframe1").contentWindow   获取iframe的window对象
+  document.getElementById("iframe1").contentWindow.document  获取iframe的document
+  document.getElementById("iframe1").contentWindow.document.documentElement  获取iframe的html
+  document.getElementById("iframe1").contentWindow.document.head    获取head
+ 2.结合Name属性，通过window提供的frames获取
+ <iframe src ="/index.html" id="ifr1" name="ifr1" scrolling="yes"></iframe>
+  其实window.frames['ifr1']返回的就是window对象
+二.在iframe中获取父级内容
+在同域下，父页面可以获取子iframe的内容，那么子iframe同样也能操作父页面内容。
+    window.parent 获取上一级的window对象，如果还是iframe则是该iframe的window对象
+    window.top 获取最顶级容器的window对象，即，就是你打开页面的文档
+    window.self 返回自身window的引用。可以理解 window===window.self
+ 注：默认情况下，iframe会自带滚动条，不会全屏.如果你想自适应iframe的话:第一步：去掉滚动条
+       <iframe src="./iframe1.html" id="iframe1" scrolling="no"></iframe>
+    第二步,设置iframe的高为body的高
+        var iwindow = iframe.contentWindow;
+        var idoc = iwindow.document;
+        iframe.height = idoc.body.offsetHeight;
+三.防嵌套网页
+1.使用window.top来防止你的网页被iframe
+  if(window != window.top){
+    window.top.location.href = correctURL;
+   }
+2.引用同域的框架判断域名(如果你网页不同域名的话，上述就会报错。)
+    if (top.location.host != window.location.host) {
+      top.location.href = window.location.href;
+    }
+四.X-Frame-Options
+  X-Frame-Options是一个相应头，主要是描述服务器的网页资源的iframe权限.
+    DENY:拒绝任何iframe的嵌套请求;
+    SAMEORIGIN:只允许同源请求;
+    ALLOW-FROM :只允许指定网页的iframe请求.
+ 注：iframe的src就只能加载同域和example.com页面；
+  
+    
+
 
 
 
