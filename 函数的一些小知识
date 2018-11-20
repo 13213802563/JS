@@ -1,0 +1,49 @@
+一、函数声明和函数表达式
+  解析器会率先读取函数声明，使其在任何代码之前用；函数表达式必须在运行完之后才会执行。
+二：caller和callee的区别
+  1.caller 返回一个调用当前函数的函数的引用 如果是由顶层调用的话 则返回null
+     function outer(){
+        inner();
+      }
+      function inner(){
+        alert(inner.caller);
+      }
+      outer();//输出：function outer(){inner();}
+    2.callee 返回一个正在被执行函数的引用（callee是arguments对象的一个成员 表示对函数对象本身的引用 它有个length属性（代表形参的长度））
+          function factorical(num){
+            if(num<=1){
+              return 1;
+            }
+            else{
+              return num*arguments.callee(num-1)
+            }
+          }
+          alert(factorical(5));
+        注意： alert(arguments.callee.caller)==== alert(inner.caller)
+三：apply（）和call（）
+  共同作用：在特定作用域中调用函数，等同于 设置函数体内this对象的值。
+         B.apply(A, arguments);即A对象应用B对象的方法
+         B.call(A, args1,args2...);即A对象调用B对象的方法
+  不同之处：
+        apply：最多只能有两个参数——新this对象和一个数组argArray。如果给该方法传递多个参数，则把参数都写进这个数组里面，当然，即使只有一个参数，也要写进数组里。如果argArray不是一个有效的数组或arguments对象，那么将导致一个TypeError。如果没有提供argArray和thisObj任何一个参数，那么Global对象将被用作thisObj，并且无法被传递任何参数。
+        call：它可以接受多个参数，第一个参数与apply一样，后面则是一串参数列表。这个方法主要用在js对象各方法相互调用的时候，使当前this实例指针保持一致，或者在特殊情况下需要改变this指针。如果没有提供thisObj参数，那么 Global 对象被用作thisObj。 
+           function add(a,b){
+              return a+b;  
+            }
+            function sub(a,b){
+              return a-b;  
+            }
+            var a1 = add.apply(sub,[4,2]);　　//sub调用add的方法、、6
+            var a2 = sub.apply(add,[4,2]);    //、、2
+            
+            var a1 = add.call(sub,4,2);      //6
+四：字符串的模式匹配
+ 1.text.match（pattern）//只接受一个参数，要么是正则表达式，要么是RegExp对象///同pattern.exec（text）
+ 2.search()//返回字符串第一个匹配项的索引，如果没找到，返回-1；只接受一个参数，要么是正则表达式
+ 3.replace()//第一个参数是RegExp对象/字符串（员字段/at/g），第二个参数是字符串、函数（修改的字段ond）
+   $&:匹配整个模式的子字符串====RegExp.lastMatch
+   $'：子字符串之前的子字符串====RegExp.leftContext
+   $`:........之后.....................rightContent
+   $n:第n个捕获组的子字符串
+   $nn
+   
