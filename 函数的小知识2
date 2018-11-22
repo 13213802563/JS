@@ -18,5 +18,20 @@
          （2）(function(){
               var num=20;
             }());
-
-
+四、Object.prototype.toString.call()   获取某个对象的数据类型的样子
+   obj instanceof Object   [object object]
+   Object.prototype.toString.call([])  [object Array]
+   Object.prototype.toString.call(new Date())  [object date]
+  区别：obj instanceof Object  判断数据类型
+        typeof num  获取数据类型
+五、函数的返回值
+ 
+   function f1(){
+   	 console.log("f1函数开始了")
+   	 return function(){
+   	 	console.log("我是返回值");
+   	 }
+   }
+   var ff=f1();
+   ff();
+        
